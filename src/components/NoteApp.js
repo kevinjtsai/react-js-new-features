@@ -1,22 +1,11 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import notesReducer from '../reducers/notes';
 import NoteList from './NoteList';
+import AddNoteForm from './AddNoteForm';
+import NotesContext from '../context/notes-context';
 
 const NoteApp = () => {
   const [notes, dispatch ] = useReducer(notesReducer, []);
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-
-  const addNote = (e) => {
-    e.preventDefault();
-    dispatch({ type: 'ADD_NOTE', title, body })
-    setTitle('');
-    setBody('');
-  }
-
-  const removeNote = (title) => {
-    dispatch({ type: 'REMOVE_NOTE', title })
-  }
 
   useEffect(() => {
     const notes = JSON.parse(localStorage.getItem('hooks-notes'));
@@ -31,16 +20,12 @@ const NoteApp = () => {
   }, [notes]);
 
   return (
-    <div>
+    <NotesContext.Provider value={{ notes, dispatch }}>
       <h1>Notes</h1>
-      <NoteList notes={notes} removeNote={removeNote} />
+      <NoteList />
       <p>Add title</p>
-      <form onSubmit={addNote}>
-        <input placeholder='title' value={title} onChange={(e) => setTitle(e.target.value)} />
-        <textarea placeholder='body' value={body} onChange={(e) => setBody(e.target.value)} />
-        <button>add note</button>
-      </form>
-    </div>
+      <AddNoteForm />
+    </NotesContext.Provider>
   )
 }
 
